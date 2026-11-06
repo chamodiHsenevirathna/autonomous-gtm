@@ -1,0 +1,50 @@
+id: S52
+title: Send adapter reached without a token / workflow lint
+seed: 42
+llm_mode: mock
+pass_criterion: A runtime call to a side-effecting adapter without a gateway token is rejected and audited. (The workflow-lint half needs a harness hook; see change requests.)
+truth_source: Red-team script; adapter token verification
+evidence_basis: machinery_check
+data_origins:
+- SCR
+covers:
+- NFR-SAF-05
+- NFR-SAF-01
+milestone: M4
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: gateway_attempt
+  ref: first_pending
+  params:
+    bypass: direct_adapter
+- at_offset_s: 0
+  kind: gateway_attempt
+  ref: first_pending
+  params:
+    bypass: no_token
+expectations:
+- kind: invariant
+  name: all
+- kind: no_effect
+  name: nothing sent externally
+  spec:
+    adapter: outreach.send
+    snapshot_key: messages_sent_to_sim
+- kind: state
+  name: direct adapter call refused
+  spec:
+    ctx: gateway.0.status
+    in:
+    - DENIED
+    - BLOCKED
+- kind: state
+  name: tokenless call refused
+  spec:
+    ctx: gateway.1.status
+    in:
+    - DENIED
+    - BLOCKED

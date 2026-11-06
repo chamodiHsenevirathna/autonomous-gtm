@@ -1,0 +1,20 @@
+# PostgreSQL only. Everything else runs as local processes (see README).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: gtm-postgres
+    environment:
+      POSTGRES_USER: gtm
+      POSTGRES_PASSWORD: gtm_local_dev_only
+      POSTGRES_DB: gtm
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - gtm_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gtm -d gtm"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  gtm_pgdata:

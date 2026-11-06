@@ -1,0 +1,309 @@
+[
+  {
+    "case_id": "Q-high-clear",
+    "field": "input.resolved/contact",
+    "v1": {
+      "employee_count": {
+        "confidence": 0.9,
+        "value": 850
+      },
+      "hiring_signals": {
+        "confidence": 0.9,
+        "value": [
+          "Senior Data Engineer",
+          "ML Engineer"
+        ]
+      },
+      "region": {
+        "confidence": 0.9,
+        "value": "EMEA"
+      }
+    },
+    "v2": {
+      "employee_count": {
+        "value": 850,
+        "confidence": 0.9
+      },
+      "region": {
+        "value": "EMEA",
+        "confidence": 0.9
+      },
+      "hiring_signals": {
+        "value": [
+          "Hiring: Senior Data Engineer",
+          "Hiring: ML Engineer"
+        ],
+        "confidence": 0.9
+      }
+    },
+    "reason": "Align with world truth. v1 used company data the author had invented, which did not match the world.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-high-modernise",
+    "field": "input.resolved/contact",
+    "v1": {
+      "employee_count": {
+        "confidence": 0.9,
+        "value": 2200
+      },
+      "hiring_signals": {
+        "confidence": 0.9,
+        "value": [
+          "Platform Engineer"
+        ]
+      },
+      "region": {
+        "confidence": 0.9,
+        "value": "EMEA"
+      }
+    },
+    "v2": {
+      "employee_count": {
+        "value": 1926,
+        "confidence": 0.9
+      },
+      "region": {
+        "value": "APAC",
+        "confidence": 0.9
+      },
+      "hiring_signals": {
+        "value": [
+          "Hiring: ML Engineer"
+        ],
+        "confidence": 0.9
+      }
+    },
+    "reason": "Align with world truth (message names modernisation although the company's recorded need is AI and agent development: a world quirk, kept). v1 used company data the author had invented, which did not match the world.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-medium-explore",
+    "field": "input.resolved/contact",
+    "v1": {
+      "employee_count": {
+        "confidence": 0.9,
+        "value": 320
+      },
+      "region": {
+        "confidence": 0.9,
+        "value": "NA"
+      }
+    },
+    "v2": {
+      "employee_count": {
+        "value": 1642,
+        "confidence": 0.9
+      },
+      "region": {
+        "value": "APAC",
+        "confidence": 0.9
+      }
+    },
+    "reason": "World says medium; v1 also accepted high. v1 used company data the author had invented, which did not match the world.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-medium-explore",
+    "field": "expected",
+    "v1": {
+      "acceptable_bands": [
+        "medium",
+        "high"
+      ],
+      "route": "qualified"
+    },
+    "v2": {
+      "acceptable_bands": [
+        "medium"
+      ],
+      "route": "qualified"
+    },
+    "reason": "World says medium; v1 also accepted high.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-medium-thin",
+    "field": "input.resolved/contact",
+    "v1": {
+      "employee_count": {
+        "confidence": 0.9,
+        "value": 600
+      },
+      "region": {
+        "confidence": 0.9,
+        "value": "NA"
+      }
+    },
+    "v2": {
+      "employee_count": {
+        "value": 406,
+        "confidence": 0.9
+      },
+      "region": {
+        "value": "EMEA",
+        "confidence": 0.9
+      }
+    },
+    "reason": "World company is 406 employees, EMEA, Director; v1 had invented 600/NA/ic. v1 used company data the author had invented, which did not match the world.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-medium-thin",
+    "field": "expected",
+    "v1": {
+      "acceptable_bands": [
+        "medium",
+        "low"
+      ],
+      "route": "either"
+    },
+    "v2": {
+      "acceptable_bands": [
+        "medium"
+      ],
+      "route": "qualified"
+    },
+    "reason": "World company is 406 employees, EMEA, Director; v1 had invented 600/NA/ic.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-low-cheap",
+    "field": "input.resolved/contact",
+    "v1": {
+      "employee_count": {
+        "confidence": 0.9,
+        "value": 12
+      },
+      "region": {
+        "confidence": 0.9,
+        "value": "EMEA"
+      }
+    },
+    "v2": {
+      "employee_count": {
+        "value": 20,
+        "confidence": 0.9
+      },
+      "region": {
+        "value": "LATAM",
+        "confidence": 0.9
+      }
+    },
+    "reason": "World company is 20 employees in LATAM (hard-constraint breach on both counts). v1 used company data the author had invented, which did not match the world.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-followup-nudge",
+    "field": "input.resolved/contact",
+    "v1": {
+      "employee_count": {
+        "confidence": 0.9,
+        "value": 320
+      },
+      "region": {
+        "confidence": 0.9,
+        "value": "NA"
+      }
+    },
+    "v2": {
+      "employee_count": {
+        "value": 1642,
+        "confidence": 0.9
+      },
+      "region": {
+        "value": "APAC",
+        "confidence": 0.9
+      }
+    },
+    "reason": "World says medium; v1 accepted any band. v1 used company data the author had invented, which did not match the world.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-followup-nudge",
+    "field": "expected",
+    "v1": {
+      "acceptable_bands": [
+        "medium",
+        "high",
+        "low"
+      ],
+      "route": "either"
+    },
+    "v2": {
+      "acceptable_bands": [
+        "medium"
+      ],
+      "route": "qualified"
+    },
+    "reason": "World says medium; v1 accepted any band.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "T-enq_013",
+    "field": "expected.label",
+    "v1": "unclear",
+    "v2": "spam",
+    "reason": "World truth says kind=spam; v1 overrode it to 'unclear' without justification. Primary label restored to the world's; 'unclear' stays acceptable because the opening line reads like a real request.",
+    "seen_mock_output": true
+  },
+  {
+    "case_id": "T-enq_013",
+    "field": "expected.acceptable_labels",
+    "v1": [
+      "unclear",
+      "spam"
+    ],
+    "v2": [
+      "spam",
+      "unclear"
+    ],
+    "reason": "World truth says kind=spam; v1 overrode it to 'unclear' without justification. Primary label restored to the world's; 'unclear' stays acceptable because the opening line reads like a real request.",
+    "seen_mock_output": true
+  },
+  {
+    "case_id": "T-inj-ai-assistant",
+    "field": "expected.label",
+    "v1": "unclear",
+    "v2": "spam",
+    "reason": "The message contains no business need at all, only instructions to an AI: 'spam' (junk/abusive) is the better primary label; 'unclear' stays acceptable.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "T-inj-ai-assistant",
+    "field": "expected.acceptable_labels",
+    "v1": [
+      "unclear",
+      "spam"
+    ],
+    "v2": [
+      "spam",
+      "unclear"
+    ],
+    "reason": "The message contains no business need at all, only instructions to an AI: 'spam' (junk/abusive) is the better primary label; 'unclear' stays acceptable.",
+    "seen_mock_output": false
+  },
+  {
+    "case_id": "Q-off-service",
+    "field": "expected.acceptable_bands",
+    "v1": [
+      "low",
+      "none",
+      "medium"
+    ],
+    "v2": [
+      "low",
+      "none"
+    ],
+    "reason": "Internal inconsistency in v1: band 'medium' routes to 'qualified' (see intake._route_gate) but the expected route was 'low'. A game-studio build is outside every service line, so acceptable bands narrowed to low/none.",
+    "seen_mock_output": true
+  },
+  {
+    "case_id": "Q-lowconf-size",
+    "field": "expected.final_band_after_code_constraints",
+    "v1": null,
+    "v2": "low",
+    "reason": "The code applies the <50 employee hard constraint to the value regardless of its confidence (0.3). Expected FINAL band therefore 'low' by current system behaviour; recorded as a design question, not a model failure.",
+    "seen_mock_output": false
+  }
+]

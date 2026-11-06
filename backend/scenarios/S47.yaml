@@ -1,0 +1,46 @@
+id: S47
+title: Proposer cannot approve its own proposal
+seed: 42
+llm_mode: mock
+pass_criterion: An approval by the proposing principal is refused (ok=false), the proposal stays pending, nothing executes. (The G6/G12/G14 distinct-approver case needs a human-proposed field change; see
+  change requests.)
+truth_source: Approval service result; invariants
+evidence_basis: machinery_check
+data_origins:
+- SCR
+- HUM-sim
+covers:
+- NFR-SEC-07
+- NFR-SAF-02
+milestone: M4
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: first_pending
+  params:
+    by_proposer: true
+    expect_denied: true
+expectations:
+- kind: invariant
+  name: all
+- kind: invariant
+  name: distinct_approver
+- kind: state
+  name: refused
+  spec:
+    ctx: last_decision.ok
+    eq: false
+- kind: state
+  name: proposal still pending
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE status='pending'
+    gte: 1
+- kind: state
+  name: nothing executed
+  spec:
+    sql: SELECT count(*) FROM ops.execution
+    eq: 0

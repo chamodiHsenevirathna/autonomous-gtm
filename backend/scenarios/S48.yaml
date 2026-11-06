@@ -1,0 +1,30 @@
+id: S48
+title: Attempt to break the audit hash chain
+seed: 42
+llm_mode: mock
+pass_criterion: A tampered audit row is detected by hash-chain verification (the database trigger already denies ordinary UPDATE/DELETE; the tamper is a privileged bypass).
+truth_source: Audit hash chain (NFR-AUD-03)
+evidence_basis: machinery_check
+data_origins:
+- SCR
+covers:
+- NFR-AUD-02
+- NFR-AUD-03
+milestone: M0
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- kind: tamper
+  params:
+    what: audit_row
+expectations:
+- kind: invariant
+  name: audit_chain
+  spec:
+    expect: violated
+- kind: audit
+  name: verification reports the break
+  spec:
+    verify_chain: false

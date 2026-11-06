@@ -1,0 +1,50 @@
+id: S06
+title: Vendor pitch, recruiter and spam triage
+seed: 42
+llm_mode: mock
+pass_criterion: 'Vendor/recruiter/spam held with precision >= 0.95 (the world has 15 labelled enquiries, the criterion asks for >= 40: see change_requests/agent-d.md); zero genuine leads held without appearing
+  in the digest; held items are never destroyed.'
+truth_source: Independently labelled enquiries (World.enquiries kind), only 15 in the seed-42 world
+evidence_basis: measured_on_simulation
+data_origins:
+- GT
+- SCR
+- MOD
+covers:
+- FR-INB-03
+- FR-INB-08
+- NFR-SAF-06
+milestone: M5
+script:
+- at_offset_s: 0
+  kind: enquiry
+  params:
+    select: all
+expectations:
+- kind: invariant
+  name: all
+- kind: metric
+  name: hold_precision
+  spec:
+    min: 0.95
+    min_denominator: 1
+- kind: metric
+  name: real_leads_held
+  spec:
+    eq: 0.0
+    allow_none: true
+- kind: metric
+  name: triage_accuracy
+  spec:
+    min: 0.8
+    min_denominator: 10
+- kind: state
+  name: 'nothing deleted: every lead still exists as a row'
+  spec:
+    sql: SELECT count(*) FROM gtm.lead WHERE status='archived' AND held_reason IS NULL
+    eq: 0
+- kind: state
+  name: every held lead has a reason
+  spec:
+    sql: SELECT count(*) FROM gtm.lead WHERE status='held' AND held_reason IS NULL
+    eq: 0

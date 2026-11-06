@@ -1,0 +1,42 @@
+id: S05
+title: Shared mailbox (info@)
+seed: 42
+llm_mode: mock
+pass_criterion: A role mailbox is never exact-linked or matched to a person; no merge, no 'same' match decision.
+truth_source: Role-mailbox label (local part) in the world enquiry
+evidence_basis: measured_on_simulation
+data_origins:
+- GT
+- SCR
+- MOD
+covers:
+- FR-INB-02
+- NFR-SAF-06
+milestone: M3
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 1800
+  kind: enquiry
+  ref: enq_007
+  params: {}
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: no 'same' decision involving contacts
+  spec:
+    sql: SELECT count(*) FROM gtm.entity_match WHERE entity_type='contact' AND (decision='same' OR band='same')
+    eq: 0
+- kind: state
+  name: no contact merged
+  spec:
+    sql: SELECT count(*) FROM gtm.contact WHERE merged_into_id IS NOT NULL
+    eq: 0
+- kind: state
+  name: no merge executed
+  spec:
+    sql: SELECT count(*) FROM gtm.merge_log
+    eq: 0

@@ -1,0 +1,43 @@
+id: S04
+title: Subsidiary contact writing under the parent's name
+seed: 42
+llm_mode: mock
+pass_criterion: The subsidiary contact is attached through the hierarchy (relationship) or raised as a match proposal; no merge of parent and subsidiary.
+truth_source: World parent_id (co_035 is a subsidiary of co_005) and enquiry labels
+evidence_basis: measured_on_simulation
+data_origins:
+- GT
+- SCR
+- MOD
+covers:
+- FR-DAT-08
+- FR-INB-02
+- FR-INB-06
+milestone: M3
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_014
+  params: {}
+- at_offset_s: 3600
+  kind: enquiry
+  ref: enq_006
+  params: {}
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: no merge
+  spec:
+    sql: SELECT count(*) FROM gtm.merge_log
+    eq: 0
+- kind: state
+  name: hierarchy relationship or match proposal exists
+  spec:
+    sql: SELECT (SELECT count(*) FROM gtm.account_relationship WHERE type='parent_of') + (SELECT count(*) FROM ops.proposal WHERE type='match_confirmation')
+    gte: 1
+- kind: metric
+  name: er_wrong_merge_rate
+  spec:
+    max: 0.0
+    allow_none: true

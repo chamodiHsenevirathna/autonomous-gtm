@@ -1,0 +1,56 @@
+id: S11
+title: Provider 429 and timeout storm
+seed: 42
+llm_mode: mock
+pass_criterion: Retries with backoff, no dead-lettered job, no failed run, cost cap respected, no duplicate side effect.
+truth_source: Expected outcome of the chaos script; invariants
+evidence_basis: machinery_check
+data_origins:
+- SIM
+- SCR
+covers:
+- NFR-REL-01
+- NFR-REL-04
+- FR-ORC-04
+milestone: M2
+script:
+- kind: inject_fault
+  params:
+    sim: provider_a
+    kind: http_429
+    count: 5
+    params:
+      retry_after: 2
+- kind: inject_fault
+  params:
+    sim: provider_b
+    kind: timeout
+    count: 3
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params:
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: retries happened
+  spec:
+    sql: SELECT count(*) FROM ops.run_step WHERE status='retrying'
+    gte: 1
+- kind: state
+  name: nothing dead-lettered
+  spec:
+    sql: SELECT count(*) FROM ops.job WHERE status='dead'
+    eq: 0
+- kind: state
+  name: no failed run
+  spec:
+    sql: SELECT count(*) FROM ops.agent_run WHERE status='failed'
+    eq: 0
+- kind: state
+  name: cost cap respected
+  spec:
+    sql: SELECT count(*) FROM ops.agent_run WHERE cost_cap IS NOT NULL AND cost > cost_cap
+    eq: 0

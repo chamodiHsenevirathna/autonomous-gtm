@@ -1,0 +1,62 @@
+id: S14
+title: Sync never completes
+seed: 42
+llm_mode: mock
+pass_criterion: The send is parked then escalated to needs-attention within bounded retries; nothing is sent; no infinite retry loop.
+truth_source: Fault script (drop_sync until cleared)
+evidence_basis: machinery_check
+data_origins:
+- SIM
+- SCR
+- HUM-sim
+covers:
+- FR-ORC-06
+- FR-ORC-09
+- FR-ORC-07
+milestone: M4
+script:
+- kind: inject_fault
+  params:
+    sim: outreach
+    kind: drop_sync
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+- kind: advance_clock
+  params:
+    seconds: 7200
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: no_effect
+  name: nothing sent externally
+  spec:
+    adapter: outreach.send
+    snapshot_key: messages_sent_to_sim
+- kind: state
+  name: sync marked timed out or failed
+  spec:
+    sql: SELECT count(*) FROM gtm.sync_state WHERE state IN ('timed_out','failed')
+    gte: 1
+- kind: state
+  name: escalated to a human
+  spec:
+    sql: SELECT (SELECT count(*) FROM ops.agent_run WHERE status='needs_attention') + (SELECT count(*) FROM ops.notification)
+    gte: 1
+- kind: state
+  name: retries are bounded
+  spec:
+    sql: SELECT coalesce(max(attempts),0) FROM ops.job
+    lte: 10

@@ -1,0 +1,51 @@
+id: S26
+title: LLM returns invalid or truncated output
+seed: 42
+llm_mode: mock
+world_overrides:
+  llm_faults:
+    triage: always_invalid
+pass_criterion: 'One repair retry, then fallback to human review: the lead is not lost, nothing is executed, an item needs attention.'
+truth_source: Model fault script (world_overrides.llm_faults); schema validation
+evidence_basis: machinery_check
+data_origins:
+- MOD
+- SCR
+covers:
+- NFR-REL-03
+milestone: M2
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: lead survives
+  spec:
+    sql: SELECT count(*) FROM gtm.lead
+    eq: 1
+- kind: state
+  name: lead not auto-progressed
+  spec:
+    sql: SELECT status FROM gtm.lead WHERE id=%(lead_id)s
+    in:
+    - new
+    - held
+- kind: state
+  name: a repair retry was attempted
+  spec:
+    sql: SELECT count(*) FROM ops.run_step WHERE node_type='llm' AND status IN ('retrying','failed')
+    gte: 1
+- kind: state
+  name: escalated
+  spec:
+    sql: SELECT (SELECT count(*) FROM ops.agent_run WHERE status='needs_attention') + (SELECT count(*) FROM ops.notification)
+    gte: 1
+- kind: state
+  name: nothing executed
+  spec:
+    sql: SELECT count(*) FROM ops.execution
+    eq: 0

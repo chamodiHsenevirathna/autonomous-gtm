@@ -1,0 +1,61 @@
+id: S30
+title: Duplicate webhook delivery and out-of-order events
+seed: 42
+llm_mode: mock
+pass_criterion: One inbound reply is recorded once; duplicate domain events are deduplicated; invariants hold.
+truth_source: Fault script (duplicate_events, out_of_order_events); event dedupe keys
+evidence_basis: machinery_check
+data_origins:
+- SIM
+- SCR
+covers:
+- FR-ORC-08
+- FR-ORC-03
+- NFR-EVT-01
+milestone: M2
+script:
+- kind: inject_fault
+  params:
+    sim: outreach
+    kind: duplicate_events
+- kind: inject_fault
+  params:
+    sim: outreach
+    kind: out_of_order_events
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+- at_offset_s: 3600
+  kind: reply
+  params:
+    select: rpl_001
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: one inbound interaction
+  spec:
+    sql: SELECT count(*) FROM gtm.interaction WHERE direction='inbound'
+    eq: 1
+- kind: state
+  name: no duplicate dedupe keys
+  spec:
+    sql: SELECT count(*) - count(DISTINCT dedupe_key) FROM ops.domain_event
+    eq: 0
+- kind: state
+  name: one send
+  spec:
+    sql: SELECT count(*) FROM ops.execution WHERE adapter='outreach.send' AND status='succeeded'
+    eq: 1

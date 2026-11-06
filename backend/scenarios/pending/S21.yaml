@@ -1,0 +1,40 @@
+id: S21
+title: Human acts while a proposal is pending (superseded)
+seed: 42
+llm_mode: mock
+pass_criterion: 'The pending message proposal is superseded within one wake cycle; nothing is sent from it. (Pending: no harness hook for a human e-mail/touch.)'
+truth_source: Scripted human touch; proposal table
+evidence_basis: machinery_check
+data_origins:
+- SCR
+- HUM-sim
+covers:
+- FR-EXE-07
+milestone: M5
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- kind: advance_clock
+  params:
+    seconds: 60
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: message proposal superseded
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE type='message' AND status='superseded'
+    gte: 1
+- kind: no_effect
+  name: nothing sent externally
+  spec:
+    adapter: outreach.send
+    snapshot_key: messages_sent_to_sim

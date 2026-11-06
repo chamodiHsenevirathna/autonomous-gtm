@@ -1,0 +1,66 @@
+id: S45
+title: Recipient email changes between approval and send
+seed: 42
+llm_mode: mock
+pass_criterion: The gateway blocks (soft, recipient_changed); nothing is sent to either address.
+truth_source: Test-only tamper of the contact e-mail; hash recomputation
+evidence_basis: machinery_check
+data_origins:
+- SCR
+- HUM-sim
+covers:
+- NFR-SAF-04
+- FR-EXE-01
+- FR-EXE-02
+milestone: M4
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+    run: false
+- kind: tamper
+  params:
+    what: recipient
+- at_offset_s: 0
+  kind: gateway_attempt
+  ref: type:message
+  params: {}
+expectations:
+- kind: invariant
+  name: all
+- kind: no_effect
+  name: nothing sent externally
+  spec:
+    adapter: outreach.send
+    snapshot_key: messages_sent_to_sim
+- kind: state
+  name: blocked
+  spec:
+    ctx: last_gateway.status
+    eq: BLOCKED
+- kind: state
+  name: soft block
+  spec:
+    ctx: last_gateway.block_class
+    eq: soft
+- kind: state
+  name: reason
+  spec:
+    ctx: last_gateway.reason
+    eq: recipient_changed
+- kind: state
+  name: proposal returned to review
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE type='message' AND status IN ('blocked','pending')
+    gte: 1

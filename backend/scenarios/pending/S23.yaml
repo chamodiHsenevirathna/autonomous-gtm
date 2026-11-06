@@ -1,0 +1,35 @@
+id: S23
+title: Dormant account reactivated by a signal
+seed: 42
+llm_mode: mock
+pass_criterion: 'Account becomes dormant after 90 quiet days; a seeded signal reactivates it within one cycle. (Pending: account agent not built; no signal-injection hook.)'
+truth_source: Account agent lifecycle table
+evidence_basis: machinery_check
+data_origins:
+- SCR
+- PLT
+covers:
+- FR-ACC-01
+milestone: M5
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- kind: advance_clock
+  params:
+    seconds: 7862400
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: account dormant
+  spec:
+    sql: SELECT count(*) FROM gtm.account_agent_state WHERE lifecycle='dormant'
+    gte: 1

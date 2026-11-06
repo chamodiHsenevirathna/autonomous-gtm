@@ -1,0 +1,54 @@
+id: S16
+title: Approval expires during sync wait
+seed: 42
+llm_mode: mock
+pass_criterion: No send after the approval has expired; the proposal expires or a fresh confirmation is requested.
+truth_source: Clock script; approval expiry; invariants
+evidence_basis: machinery_check
+data_origins:
+- SIM
+- SCR
+- HUM-sim
+covers:
+- FR-EXE-01
+- NFR-SAF-02
+- FR-ORC-06
+milestone: M4
+script:
+- kind: inject_fault
+  params:
+    sim: outreach
+    kind: eventual_consistency
+    params:
+      delay_s: 345600
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+- kind: advance_clock
+  params:
+    seconds: 288000
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: no_effect
+  name: nothing sent externally
+  spec:
+    adapter: outreach.send
+    snapshot_key: messages_sent_to_sim
+- kind: state
+  name: proposal expired or reopened for confirmation
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE type='message' AND status IN ('expired','pending')
+    gte: 1

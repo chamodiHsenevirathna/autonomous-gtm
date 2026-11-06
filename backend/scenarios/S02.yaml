@@ -1,0 +1,47 @@
+id: S02
+title: Exact duplicate lead (same email)
+seed: 42
+llm_mode: mock
+pass_criterion: The second enquiry is linked to the existing contact; no second account, contact or merge proposal is created.
+truth_source: Enquiry duplicate_of label in the world
+evidence_basis: measured_on_simulation
+data_origins:
+- GT
+- SCR
+- MOD
+covers:
+- FR-INB-02
+- FR-DAT-07
+milestone: M3
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_002
+  params: {}
+- at_offset_s: 3600
+  kind: enquiry
+  ref: enq_003
+  params: {}
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: one live contact
+  spec:
+    sql: SELECT count(*) FROM gtm.contact WHERE merged_into_id IS NULL
+    eq: 1
+- kind: state
+  name: one live account
+  spec:
+    sql: SELECT count(*) FROM gtm.account WHERE merged_into_id IS NULL
+    eq: 1
+- kind: state
+  name: no merge proposal
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE type='merge'
+    eq: 0
+- kind: state
+  name: two leads (one per enquiry)
+  spec:
+    sql: SELECT count(*) FROM gtm.lead
+    eq: 2

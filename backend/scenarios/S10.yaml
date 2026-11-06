@@ -1,0 +1,51 @@
+id: S10
+title: Provider B down, provider A partial
+seed: 42
+llm_mode: mock
+pass_criterion: The waterfall continues to the next source; fields that cannot be supported stay unknown or stale; no expired value is used with high confidence; no failed run.
+truth_source: Fault script on providers; GT attributes
+evidence_basis: measured_on_simulation
+data_origins:
+- GT
+- SIM
+covers:
+- FR-DAT-04
+- FR-DAT-05
+milestone: M3
+script:
+- kind: inject_fault
+  params:
+    sim: provider_b
+    kind: http_503
+- kind: inject_fault
+  params:
+    sim: provider_a
+    kind: partial_data
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params:
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: no failed run
+  spec:
+    sql: SELECT count(*) FROM ops.agent_run WHERE status='failed'
+    eq: 0
+- kind: state
+  name: more than one source consulted
+  spec:
+    sql: SELECT count(DISTINCT data_source_id) FROM gtm.observation
+    gte: 2
+- kind: state
+  name: some field is marked stale/expired/unknown
+  spec:
+    sql: SELECT count(*) FROM gtm.resolved_field WHERE freshness_state IN ('stale','expired','unknown')
+    gte: 1
+- kind: state
+  name: no expired value with confidence above 0.5
+  spec:
+    sql: SELECT count(*) FROM gtm.resolved_field WHERE freshness_state='expired' AND confidence > 0.5
+    eq: 0

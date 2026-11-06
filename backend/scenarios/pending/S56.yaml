@@ -1,0 +1,57 @@
+id: S56
+title: Poison event, budget exceeded, gate expiry and escalation
+seed: 42
+llm_mode: mock
+world_overrides:
+  poison_event: true
+  cost_cap_usd: 0.0001
+pass_criterion: Needs-attention items exist for each failure; no run fails silently; proposals past expiry are swept and escalated.
+truth_source: Planted poison event and cost cap (world_overrides); orchestrator state tables
+evidence_basis: machinery_check
+data_origins:
+- PLT
+- SIM
+- SCR
+covers:
+- FR-ORC-09
+- NFR-REL-01
+- NFR-REL-04
+milestone: M2
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params:
+    idle_advance: true
+- kind: advance_clock
+  params:
+    seconds: 360000
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: needs-attention or budget item exists
+  spec:
+    sql: SELECT count(*) FROM ops.agent_run WHERE status IN ('needs_attention','budget_exceeded')
+    gte: 1
+- kind: state
+  name: a poison dispatch is dead-lettered, not dropped
+  spec:
+    sql: SELECT count(*) FROM ops.dispatch WHERE status='dead'
+    gte: 1
+- kind: state
+  name: no failed run without an error
+  spec:
+    sql: SELECT count(*) FROM ops.agent_run WHERE status='failed' AND error IS NULL
+    eq: 0
+- kind: state
+  name: no proposal left pending past its expiry
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE status='pending' AND expires_at < %(now)s
+    eq: 0
+- kind: state
+  name: someone was notified
+  spec:
+    sql: SELECT count(*) FROM ops.notification
+    gte: 1

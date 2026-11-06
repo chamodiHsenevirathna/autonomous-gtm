@@ -1,0 +1,56 @@
+id: S19
+title: Meeting booked mid-sequence (verified without the brief)
+seed: 42
+llm_mode: mock
+pass_criterion: A meeting_booked event is recorded, no sequence step stays pending, no further message is sent after it.
+truth_source: Scripted reply rpl_002 (meeting_booked); proposal table
+evidence_basis: machinery_check
+data_origins:
+- SCR
+- SIM
+- HUM-sim
+covers:
+- FR-EXE-04
+- FR-EXE-06
+milestone: M4
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+- at_offset_s: 0
+  kind: reply
+  params:
+    select: rpl_002
+- kind: advance_clock
+  params:
+    seconds: 100000
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: meeting recorded
+  spec:
+    sql: SELECT count(*) FROM gtm.interaction WHERE classification='meeting_booked'
+    gte: 1
+- kind: state
+  name: no sequence step pending
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE type='sequence_step' AND status='pending'
+    eq: 0
+- kind: state
+  name: still only the first message sent
+  spec:
+    sql: SELECT count(*) FROM ops.execution WHERE adapter='outreach.send' AND status='succeeded'
+    lte: 1

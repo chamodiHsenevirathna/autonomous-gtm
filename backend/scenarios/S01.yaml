@@ -1,0 +1,98 @@
+id: S01
+title: Clean qualified inbound lead, new account (golden thread)
+seed: 42
+llm_mode: mock
+pass_criterion: Triage genuine, band high, one account/contact created via approved CRM write, one approved message sent to the approved recipient,
+  all invariants hold, audit chain verifies.
+truth_source: Ground-truth enquiry labels (enq_001 expected_band=high, kind=genuine); invariants over the event log
+evidence_basis: measured_on_simulation
+data_origins:
+- GT
+- SIM
+- SCR
+- MOD
+- HUM-sim
+covers:
+- FR-INB-01
+- FR-INB-03
+- FR-INB-05
+- FR-EXE-01
+- FR-EXE-08
+- NFR-SAF-02
+milestone: M5
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: metric
+  name: triage_accuracy
+  spec:
+    eq: 1.0
+    min_denominator: 1
+- kind: metric
+  name: qualification_accuracy
+  spec:
+    eq: 1.0
+    min_denominator: 1
+- kind: metric
+  name: qualification_recall
+  spec:
+    eq: 1.0
+    min_denominator: 1
+- kind: state
+  name: exactly one account
+  spec:
+    sql: SELECT count(*) FROM gtm.account WHERE merged_into_id IS NULL
+    eq: 1
+- kind: state
+  name: exactly one live contact
+  spec:
+    sql: SELECT count(*) FROM gtm.contact WHERE merged_into_id IS NULL
+    eq: 1
+- kind: state
+  name: one CRM write executed
+  spec:
+    sql: SELECT count(*) FROM ops.execution WHERE adapter='crm.write' AND status='succeeded'
+    eq: 1
+- kind: state
+  name: one message sent
+  spec:
+    sql: SELECT count(*) FROM ops.execution WHERE adapter='outreach.send' AND status='succeeded'
+    eq: 1
+- kind: state
+  name: sim saw exactly one send
+  spec:
+    snapshot: messages_sent_to_sim
+    eq: 1
+- kind: state
+  name: lead reached a terminal workflow state
+  spec:
+    sql: SELECT status FROM gtm.lead WHERE id=%(lead_id)s
+    in:
+    - proposed
+    - routed
+    - qualified
+- kind: audit
+  name: message execution audited
+  spec:
+    event_type: execution.completed
+    gte: 1
+- kind: audit
+  name: chain verifies
+  spec:
+    verify_chain: true

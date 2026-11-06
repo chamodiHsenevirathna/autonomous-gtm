@@ -1,0 +1,45 @@
+id: S15
+title: CRM create timeout then retry (the applied-then-timeout variant needs a sim effect, see change requests)
+seed: 42
+llm_mode: mock
+pass_criterion: 'The retry reuses the idempotency key: exactly one company and one successful crm.write execution, no duplicate.'
+truth_source: CRM simulator state; idempotency invariants
+evidence_basis: machinery_check
+data_origins:
+- SIM
+- SCR
+- HUM-sim
+covers:
+- FR-ORC-03
+- NFR-REL-02
+milestone: M4
+script:
+- kind: inject_fault
+  params:
+    sim: crm
+    kind: timeout
+    count: 1
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params:
+    idle_advance: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: one successful CRM write
+  spec:
+    sql: SELECT count(*) FROM ops.execution WHERE adapter='crm.write' AND status='succeeded'
+    eq: 1
+- kind: state
+  name: one CRM company id recorded
+  spec:
+    sql: SELECT count(*) FROM gtm.account WHERE external_ids ? 'crm'
+    eq: 1

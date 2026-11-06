@@ -1,0 +1,70 @@
+id: S49
+title: Unsubscribe arrives while a send is in flight
+seed: 42
+llm_mode: mock
+pass_criterion: At most the in-flight message goes out; every later send is blocked; the suppression exists.
+truth_source: Scripted race (unsubscribe delivered before the gateway runs); execution table
+evidence_basis: machinery_check
+data_origins:
+- SIM
+- SCR
+- HUM-sim
+covers:
+- FR-EXE-02
+- FR-EXE-03
+milestone: M4
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_014
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+    run: false
+- at_offset_s: 0
+  kind: reply
+  params:
+    select: rpl_008
+    run: false
+- kind: custom
+  params:
+    name: run_until_idle
+    idle_advance: false
+- at_offset_s: 0
+  kind: gateway_attempt
+  ref: type:message
+  params: {}
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: at most the in-flight message was sent
+  spec:
+    sql: SELECT count(*) FROM ops.execution WHERE adapter='outreach.send' AND status='succeeded'
+    lte: 1
+- kind: state
+  name: simulator saw at most one
+  spec:
+    snapshot: messages_sent_to_sim
+    lte: 1
+- kind: state
+  name: suppression recorded
+  spec:
+    sql: SELECT count(*) FROM gtm.suppression WHERE reason='unsubscribe'
+    gte: 1
+- kind: state
+  name: later attempt is not a new send
+  spec:
+    ctx: last_gateway.status
+    in:
+    - BLOCKED
+    - DENIED
+    - EXECUTED

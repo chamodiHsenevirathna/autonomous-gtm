@@ -1,0 +1,108 @@
+id: S18
+title: 'Reply handling: interested, not now, OOO, bounce, unsubscribe, referral'
+seed: 42
+llm_mode: mock
+pass_criterion: Hard signals (bounce, unsubscribe, OOO) 6/6 deterministic; model intent >= 90% on the rest.
+truth_source: Six scripted replies (SCR); deterministic rules for hard signals
+evidence_basis: machinery_check
+data_origins:
+- SCR
+- MOD
+- SIM
+covers:
+- FR-EXE-03
+- FR-EXE-04
+milestone: M4
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_002
+  params: {}
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_006
+  params: {}
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_007
+  params: {}
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_012
+  params: {}
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_014
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+    by: user:sam
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    all: true
+    by: user:maya
+- at_offset_s: 0
+  kind: reply
+  params:
+    select: rpl_001
+- at_offset_s: 0
+  kind: reply
+  params:
+    select: rpl_003
+- at_offset_s: 0
+  kind: reply
+  params:
+    select: rpl_005
+- at_offset_s: 0
+  kind: reply
+  params:
+    select: rpl_006
+- at_offset_s: 0
+  kind: reply
+  params:
+    select: rpl_008
+- at_offset_s: 0
+  kind: reply
+  params:
+    select: rpl_007
+- kind: advance_clock
+  params:
+    seconds: 100000
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: six replies recorded and classified
+  spec:
+    sql: SELECT count(*) FROM gtm.interaction WHERE direction='inbound' AND classification IS NOT NULL
+    eq: 6
+- kind: state
+  name: unsubscribe -> suppression
+  spec:
+    sql: SELECT count(*) FROM gtm.suppression WHERE reason='unsubscribe'
+    eq: 1
+- kind: state
+  name: bounce -> suppression and bounced e-mail
+  spec:
+    sql: SELECT (SELECT count(*) FROM gtm.suppression WHERE reason='bounce') + (SELECT count(*) FROM gtm.contact WHERE email_status='bounced')
+    gte: 2
+- kind: state
+  name: OOO is not suppression
+  spec:
+    sql: SELECT count(*) FROM gtm.interaction WHERE classification IN ('ooo','out_of_office')
+    eq: 1
+- kind: state
+  name: interested reply routed to a human
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE type IN ('task','lead_disposition') AND status='pending'
+    gte: 1

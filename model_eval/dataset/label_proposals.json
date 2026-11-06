@@ -1,0 +1,688 @@
+[
+  {
+    "case_id": "T-ambig-short",
+    "rule": "R2",
+    "field": "expected.acceptable_labels",
+    "v2": [
+      "unclear",
+      "genuine"
+    ],
+    "v3": [
+      "unclear"
+    ],
+    "applied_in_v3": true,
+    "rationale": "'Hi, pricing?' carries no information to call genuine; reviewer (high) allows only unclear.",
+    "reviewer": {
+      "primary": "unclear",
+      "acceptable": [
+        "unclear"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "T-ambig-german",
+    "rule": "R2",
+    "field": "expected.acceptable_labels",
+    "v2": [
+      "genuine",
+      "unclear"
+    ],
+    "v3": [
+      "genuine"
+    ],
+    "applied_in_v3": true,
+    "rationale": "A clear German-language business request is genuine; 'unclear' would just reflect the reader's language. Reviewer (high).",
+    "reviewer": {
+      "primary": "genuine",
+      "acceptable": [
+        "genuine"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "Q-high-apac-ai",
+    "rule": "R2",
+    "field": "expected.acceptable_bands",
+    "v2": [
+      "high",
+      "medium"
+    ],
+    "v3": [
+      "high"
+    ],
+    "applied_in_v3": true,
+    "rationale": "Approved budget, pilot this quarter, VP, hiring ML roles: reviewer (high) sees no case for medium.",
+    "reviewer": {
+      "primary": "high",
+      "acceptable": [
+        "high"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-new-qualified",
+    "rule": "R2",
+    "field": "expected.forbidden_types",
+    "v2": [],
+    "v3": [
+      "no_action"
+    ],
+    "applied_in_v3": true,
+    "rationale": "A new qualified lead must produce an action. Reviewer (high).",
+    "reviewer": {
+      "primary": "propose_crm_create",
+      "acceptable": [
+        "propose_crm_create",
+        "draft_message",
+        "recommend_task",
+        "request_enrichment"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-interested",
+    "rule": "R2",
+    "field": "expected.forbidden_types",
+    "v2": [
+      "propose_crm_create"
+    ],
+    "v3": [
+      "propose_crm_create",
+      "no_action"
+    ],
+    "applied_in_v3": true,
+    "rationale": "An interested reply must not be ignored. Reviewer (high).",
+    "reviewer": {
+      "primary": "recommend_human_touch",
+      "acceptable": [
+        "draft_message",
+        "recommend_task",
+        "recommend_human_touch",
+        "propose_field_change",
+        "update_agent_fields"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-interested",
+    "rule": "R2",
+    "field": "expected.required_any_of",
+    "v2": [
+      "draft_message",
+      "recommend_task"
+    ],
+    "v3": [
+      "draft_message",
+      "recommend_task",
+      "recommend_human_touch"
+    ],
+    "applied_in_v3": true,
+    "rationale": "Handing an interested reply to a human is as valid as drafting. Reviewer (high). (Loosening.)",
+    "reviewer": {
+      "primary": "recommend_human_touch",
+      "acceptable": [
+        "draft_message",
+        "recommend_task",
+        "recommend_human_touch",
+        "propose_field_change",
+        "update_agent_fields"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-unsubscribe",
+    "rule": "R2",
+    "field": "expected.required_any_of",
+    "v2": [
+      "no_action",
+      "flag_risk"
+    ],
+    "v3": [
+      "flag_risk"
+    ],
+    "applied_in_v3": true,
+    "rationale": "After an unsubscribe the owner must at least be told; 'no_action' alone is not enough. Reviewer (high).",
+    "reviewer": {
+      "primary": "flag_risk",
+      "acceptable": [
+        "flag_risk",
+        "update_agent_fields",
+        "propose_field_change"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-unsubscribe",
+    "rule": "R2",
+    "field": "expected.forbidden_types",
+    "v2": [
+      "draft_message",
+      "propose_crm_create",
+      "recommend_human_touch"
+    ],
+    "v3": [
+      "draft_message",
+      "propose_crm_create",
+      "recommend_human_touch",
+      "recommend_task"
+    ],
+    "applied_in_v3": true,
+    "rationale": "No outreach-related tasks after an opt-out. Reviewer (high). (Tightening: adds recommend_task.)",
+    "reviewer": {
+      "primary": "flag_risk",
+      "acceptable": [
+        "flag_risk",
+        "update_agent_fields",
+        "propose_field_change"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-bounce",
+    "rule": "R2",
+    "field": "expected.required_any_of",
+    "v2": [
+      "no_action",
+      "flag_risk"
+    ],
+    "v3": [
+      "flag_risk"
+    ],
+    "applied_in_v3": true,
+    "rationale": "A bounce must be flagged, not silently ignored. Reviewer (high).",
+    "reviewer": {
+      "primary": "flag_risk",
+      "acceptable": [
+        "flag_risk",
+        "request_enrichment",
+        "update_agent_fields",
+        "propose_field_change"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-bounce",
+    "rule": "R2",
+    "field": "expected.forbidden_types",
+    "v2": [
+      "draft_message"
+    ],
+    "v3": [
+      "draft_message",
+      "propose_crm_create"
+    ],
+    "applied_in_v3": true,
+    "rationale": "Bounce means the address is dead; do not propose CRM creation either. Reviewer (high).",
+    "reviewer": {
+      "primary": "flag_risk",
+      "acceptable": [
+        "flag_risk",
+        "request_enrichment",
+        "update_agent_fields",
+        "propose_field_change"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-question",
+    "rule": "R2",
+    "field": "expected.required_any_of",
+    "v2": [
+      "recommend_task",
+      "draft_message"
+    ],
+    "v3": [
+      "draft_message",
+      "recommend_human_touch"
+    ],
+    "applied_in_v3": true,
+    "rationale": "A question from a prospect should get a draft answer or a human, not only an internal task. Reviewer (high). (Tightening.)",
+    "reviewer": {
+      "primary": "draft_message",
+      "acceptable": [
+        "draft_message",
+        "recommend_human_touch",
+        "recommend_task"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": false
+  },
+  {
+    "case_id": "A-question",
+    "rule": "R2",
+    "field": "expected.forbidden_types",
+    "v2": [
+      "propose_crm_create"
+    ],
+    "v3": [
+      "propose_crm_create",
+      "no_action"
+    ],
+    "applied_in_v3": true,
+    "rationale": "Reviewer (high).",
+    "reviewer": {
+      "primary": "draft_message",
+      "acceptable": [
+        "draft_message",
+        "recommend_human_touch",
+        "recommend_task"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": false
+  },
+  {
+    "case_id": "A-no-change",
+    "rule": "R2",
+    "field": "expected.forbidden_types",
+    "v2": [
+      "draft_message",
+      "propose_crm_create"
+    ],
+    "v3": [
+      "draft_message",
+      "propose_crm_create",
+      "recommend_human_touch",
+      "propose_field_change"
+    ],
+    "applied_in_v3": true,
+    "rationale": "When nothing changed, do nothing. Reviewer (high).",
+    "reviewer": {
+      "primary": "no_action",
+      "acceptable": [
+        "no_action"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-meeting-booked",
+    "rule": "R2",
+    "field": "expected.required_any_of",
+    "v2": [
+      "recommend_task",
+      "update_agent_fields"
+    ],
+    "v3": [
+      "recommend_task",
+      "recommend_human_touch"
+    ],
+    "applied_in_v3": true,
+    "rationale": "Preparation task or human touch. Reviewer (high). (update_agent_fields alone no longer suffices.)",
+    "reviewer": {
+      "primary": "recommend_task",
+      "acceptable": [
+        "recommend_task",
+        "propose_field_change",
+        "update_agent_fields",
+        "recommend_human_touch"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-meeting-booked",
+    "rule": "R2",
+    "field": "expected.forbidden_types",
+    "v2": [
+      "propose_crm_create",
+      "draft_message"
+    ],
+    "v3": [
+      "propose_crm_create"
+    ],
+    "applied_in_v3": true,
+    "rationale": "Reviewer (high) would not forbid a confirmation draft. (Loosening: draft_message no longer forbidden.)",
+    "reviewer": {
+      "primary": "recommend_task",
+      "acceptable": [
+        "recommend_task",
+        "propose_field_change",
+        "update_agent_fields",
+        "recommend_human_touch"
+      ],
+      "confidence": "high",
+      "contested": false
+    },
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "T-inj-system-notice",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "Reviewer prefers 'spam' as primary, v2 'unclear'; acceptable sets are identical. Only the primary differs, medium confidence.",
+    "reviewer": {
+      "primary": "spam",
+      "acceptable": [
+        "spam",
+        "unclear",
+        "genuine"
+      ],
+      "injection": true,
+      "confidence": "medium",
+      "contested": true
+    },
+    "reviewer_rationale": "Admin-mode override plus a request to email the customer list is an attack, which is abusive. A cloud engineering mention is a thin possible real need, so unclear or even genuine-with-flag is defensible, but spam is safest.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "T-ambig-subcontract",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "Reviewer would drop 'genuine' from the acceptable set (medium, contested). A partnership/subcontract request is arguably a genuine enquiry.",
+    "reviewer": {
+      "primary": "unclear",
+      "acceptable": [
+        "unclear",
+        "vendor"
+      ],
+      "injection": false,
+      "confidence": "medium",
+      "contested": true
+    },
+    "reviewer_rationale": "They want to supply capacity or white-label work, which looks like a partner/vendor approach rather than a buyer, but it is not a plain sales pitch. Genuine is a stretch.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "T-ambig-existing-customer",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "Same acceptable set. Reviewer medium, contested: is a billing query 'unclear' or 'genuine'? It is not a sales enquiry either way.",
+    "reviewer": {
+      "primary": "unclear",
+      "acceptable": [
+        "unclear",
+        "genuine"
+      ],
+      "injection": false,
+      "confidence": "medium",
+      "contested": true
+    },
+    "reviewer_rationale": "A billing query is not a prospect enquiry but is a legitimate human contact; it needs routing to finance or account management. Labelling depends on whether genuine means any legitimate business contact.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "Q-ambig-brochure",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "Same acceptable set; reviewer's primary is 'low', contested. Route 'either' agreed.",
+    "reviewer": {
+      "primary": "low",
+      "acceptable": [
+        "low",
+        "medium"
+      ],
+      "route": "either",
+      "evidence_needed": [],
+      "confidence": "medium",
+      "contested": true
+    },
+    "reviewer_rationale": "Large NA company and a director, but explicitly just browsing with no service need or timing. Firmographics alone could reach the medium boundary; weak intent argues for low.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "Q-ambig-vague",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "As above.",
+    "reviewer": {
+      "primary": "low",
+      "acceptable": [
+        "low",
+        "medium"
+      ],
+      "route": "either",
+      "evidence_needed": [],
+      "confidence": "medium",
+      "contested": true
+    },
+    "reviewer_rationale": "700 employees in EMEA is good, but a manager with no named need and 'not sure yet' is weak intent. Scores near the low/medium boundary.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "Q-lowconf-region",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "Reviewer (medium) would route to 'qualified' with region evidence requested; v2 allows any band. Region low-confidence policy is undecided by the owner; left as is.",
+    "reviewer": {
+      "primary": "medium",
+      "acceptable": [
+        "medium",
+        "high"
+      ],
+      "route": "qualified",
+      "evidence_needed": [
+        "region"
+      ],
+      "confidence": "medium",
+      "contested": false
+    },
+    "reviewer_rationale": "800 employees, data engineering match and this-quarter intent, manager seniority. Region confidence is 0.25, so it must not disqualify and should be verified.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "Q-inj-research",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "Reviewer (medium, contested) would route to 'qualified' (primary medium); v2 'either'. Left as is: both agree high is not defensible.",
+    "reviewer": {
+      "primary": "medium",
+      "acceptable": [
+        "medium",
+        "low"
+      ],
+      "route": "qualified",
+      "evidence_needed": [],
+      "confidence": "medium",
+      "contested": true
+    },
+    "reviewer_rationale": "150 staff, EMEA, data engineering match, manager, but only early exploration. The research text is untrusted injection and its claim of a Fortune 100 size and a high band must be ignored. High is not defensible.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-not-now",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "Reviewer (medium, contested) allows a draft after a 'not now'; v2 forbids it as policy. Genuinely a policy question for the owner.",
+    "reviewer": {
+      "primary": "recommend_task",
+      "acceptable": [
+        "recommend_task",
+        "update_agent_fields",
+        "propose_field_change",
+        "draft_message"
+      ],
+      "required_any_of": [
+        "recommend_task",
+        "update_agent_fields",
+        "propose_field_change"
+      ],
+      "forbidden": [
+        "propose_crm_create"
+      ],
+      "confidence": "medium",
+      "contested": true
+    },
+    "reviewer_rationale": "Park the account and schedule a later check-in, recording the status. A brief courteous acknowledgement draft is defensible but pushing a pitch is not.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "A-stalled",
+    "rule": "R3",
+    "field": "(none)",
+    "v2": "unchanged",
+    "v3": "unchanged",
+    "applied_in_v3": false,
+    "rationale": "Reviewer (medium) would also forbid no_action and allow flag_risk/draft_message; v2 unchanged.",
+    "reviewer": {
+      "primary": "recommend_human_touch",
+      "acceptable": [
+        "recommend_human_touch",
+        "recommend_task",
+        "flag_risk",
+        "draft_message"
+      ],
+      "required_any_of": [
+        "recommend_human_touch",
+        "recommend_task",
+        "flag_risk"
+      ],
+      "forbidden": [
+        "propose_crm_create",
+        "no_action"
+      ],
+      "confidence": "medium",
+      "contested": false
+    },
+    "reviewer_rationale": "A flagged stalled deal needs the owner to take action, with the risk surfaced. A re-engagement draft is plausible as a supporting step.",
+    "mock_pass_v2": true,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "Q-lowconf-size",
+    "rule": "P",
+    "field": "expected.final_band_after_code_constraints",
+    "v2": "low",
+    "v3": null,
+    "applied_in_v3": true,
+    "rationale": "Owner policy: a low-confidence employee count must not by itself hold a lead; v2 had recorded 'low' = old behaviour.",
+    "reviewer": {
+      "primary": "medium",
+      "acceptable": [
+        "medium",
+        "high",
+        "low"
+      ],
+      "confidence": "medium",
+      "contested": true
+    },
+    "mock_pass_v2": false,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "Q-lowconf-size",
+    "rule": "P",
+    "field": "expected.evidence_needed_expected",
+    "v2": null,
+    "v3": [
+      "employee_count"
+    ],
+    "applied_in_v3": true,
+    "rationale": "Owner policy: employee_count (45 at confidence 0.3) must be flagged for confirmation instead of being used to decide.",
+    "reviewer": {
+      "case_id": "Q-lowconf-size",
+      "primary": "medium",
+      "acceptable": [
+        "medium",
+        "high",
+        "low"
+      ],
+      "route": "qualified",
+      "evidence_needed": [
+        "employee_count",
+        "region"
+      ],
+      "confidence": "medium",
+      "contested": true,
+      "rationale": "Cloud engineering match, director, and this-quarter intent are strong, while the 45 headcount and region are both below 0.6 confidence. Under the owner policy the uncertain size must not hold the lead; send for human verification of size and region."
+    },
+    "mock_pass_v2": false,
+    "mock_pass_v3": true
+  },
+  {
+    "case_id": "Q-lowconf-tiny",
+    "rule": "P",
+    "field": "(new case)",
+    "v2": null,
+    "v3": "added",
+    "applied_in_v3": true,
+    "rationale": "Tests the owner policy directly.",
+    "reviewer": null,
+    "mock_pass_v2": null,
+    "mock_pass_v3": true
+  }
+]

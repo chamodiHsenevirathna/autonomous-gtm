@@ -1,0 +1,34 @@
+id: S12
+title: Cost cap hit mid-waterfall
+seed: 42
+llm_mode: mock
+pass_criterion: 'Enrichment stops at the cap; spend never exceeds the cap; gaps stay unknown. (Pending: the harness has no way to set a tiny cap.)'
+truth_source: Cost counters in enrichment_request / agent_run
+evidence_basis: machinery_check
+data_origins:
+- SIM
+- GT
+covers:
+- FR-DAT-04
+- NFR-COST-01
+- NFR-REL-04
+milestone: M3
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params:
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: spend never above cap
+  spec:
+    sql: SELECT count(*) FROM gtm.enrichment_request WHERE cost_cap IS NOT NULL AND cost_total > cost_cap
+    eq: 0
+- kind: state
+  name: some request stopped at the cap
+  spec:
+    sql: SELECT count(*) FROM gtm.enrichment_request WHERE status IN ('capped','partial')
+    gte: 1

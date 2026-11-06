@@ -1,0 +1,39 @@
+id: S50
+title: Genuine low-signal lead is never destroyed
+seed: 42
+llm_mode: mock
+pass_criterion: The enquiry from a student (genuine, expected low) leaves a lead row that is not archived; nothing is deleted. (The world has no genuine lead that looks like spam; see change requests.)
+truth_source: World enquiry enq_011 label (genuine)
+evidence_basis: measured_on_simulation
+data_origins:
+- GT
+- SCR
+- MOD
+covers:
+- NFR-SAF-06
+- FR-INB-08
+milestone: M5
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_011
+  params: {}
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: one lead row
+  spec:
+    sql: SELECT count(*) FROM gtm.lead
+    eq: 1
+- kind: state
+  name: not archived
+  spec:
+    sql: SELECT status FROM gtm.lead WHERE id=%(lead_id)s
+    not_in:
+    - archived
+- kind: state
+  name: held leads carry a reason
+  spec:
+    sql: SELECT count(*) FROM gtm.lead WHERE status='held' AND held_reason IS NULL
+    eq: 0

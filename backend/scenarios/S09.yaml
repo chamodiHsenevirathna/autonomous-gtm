@@ -1,0 +1,38 @@
+id: S09
+title: Conflicting provider data on headcount
+seed: 42
+llm_mode: mock
+pass_criterion: Winner within +-10% of truth in >= 90% of seeded conflicts; conflict flagged whenever providers differ by more than 20%.
+truth_source: GT employee_count
+evidence_basis: measured_on_simulation
+data_origins:
+- GT
+- SIM
+covers:
+- FR-DAT-02
+- FR-DAT-06
+milestone: M3
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 60
+  kind: enquiry
+  ref: enq_004
+  params: {}
+expectations:
+- kind: invariant
+  name: all
+- kind: metric
+  name: resolved_field_accuracy
+  spec:
+    min: 0.9
+    min_denominator: 1
+- kind: state
+  name: no unflagged >20% disagreement
+  spec:
+    sql: SELECT count(*) FROM gtm.resolved_field r WHERE r.field='employee_count' AND NOT r.conflict_flag AND EXISTS (SELECT 1 FROM gtm.observation a JOIN gtm.observation b ON a.entity_type=b.entity_type
+      AND a.entity_id=b.entity_id AND a.field=b.field AND a.id<b.id WHERE a.entity_type=r.entity_type AND a.entity_id=r.entity_id AND a.field='employee_count' AND abs((a.value#>>'{}')::numeric-(b.value#>>'{}')::numeric)
+      > 0.2*greatest((a.value#>>'{}')::numeric,(b.value#>>'{}')::numeric))
+    eq: 0

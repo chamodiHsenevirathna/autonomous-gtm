@@ -1,0 +1,60 @@
+id: S22
+title: Deal stalls over 45 simulated days
+seed: 42
+llm_mode: mock
+pass_criterion: Stall flagged within one heartbeat of the threshold; a recommendation proposal is present; nothing changes a human-owned field
+  without approval. (Clearing after a human action needs a harness hook; see README.)
+truth_source: Scripted 46-day timeline (clock advance) after the golden thread
+evidence_basis: machinery_check
+data_origins:
+- SCR
+- SIM
+- PLT
+covers:
+- FR-PIP-01
+- FR-PIP-04
+- FR-PIP-06
+milestone: M6
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+    idle_advance: true
+- kind: advance_clock
+  params:
+    seconds: 3974400
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: state
+  name: opportunity flagged stalled
+  spec:
+    sql: SELECT count(*) FROM gtm.opportunity WHERE is_stalled
+    gte: 1
+- kind: state
+  name: stall reason recorded
+  spec:
+    sql: SELECT count(*) FROM gtm.opportunity WHERE is_stalled AND stall_reason IS NOT NULL
+    gte: 1
+- kind: state
+  name: recommendation raised as a proposal
+  spec:
+    sql: SELECT count(*) FROM ops.proposal WHERE type IN ('task','field_change') AND proposed_by LIKE 'agent:%%'
+    gte: 1
+- kind: state
+  name: stage unchanged without approval
+  spec:
+    sql: SELECT count(*) FROM gtm.stage_history WHERE from_stage IS NOT NULL
+    eq: 0

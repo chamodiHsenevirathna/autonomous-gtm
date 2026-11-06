@@ -1,0 +1,57 @@
+id: S24
+title: Human edits a draft then approves
+seed: 42
+llm_mode: mock
+pass_criterion: The gateway sends the edited payload only; the approval is bound to the edited hash; recipient unchanged.
+truth_source: Edit applied by the script; approval hash invariants
+evidence_basis: machinery_check
+data_origins:
+- SCR
+- HUM-sim
+- SIM
+covers:
+- FR-EXE-01
+- NFR-SAF-04
+- FR-INB-09
+milestone: M4
+script:
+- at_offset_s: 0
+  kind: enquiry
+  ref: enq_001
+  params: {}
+- at_offset_s: 0
+  kind: human_decision
+  ref: gate:G1|G2|G3|G4|G7|G8,status:pending
+  params:
+    drain: true
+- at_offset_s: 0
+  kind: human_decision
+  ref: type:message,status:pending
+  params:
+    by: user:maya
+    edit:
+      body: 'EDITED BY HUMAN: thanks for getting in touch.'
+    idle_advance: true
+expectations:
+- kind: invariant
+  name: all
+- kind: invariant
+  name: approval_required
+- kind: invariant
+  name: recipient_matches_approval
+- kind: state
+  name: approval records the edit
+  spec:
+    sql: SELECT count(*) FROM ops.approval_decision WHERE decision='approve_with_edits' AND approved_payload->>'body' LIKE 'EDITED BY HUMAN%%'
+    eq: 1
+- kind: state
+  name: the executed approval is the edited one
+  spec:
+    sql: SELECT count(*) FROM ops.execution e JOIN ops.approval_decision a ON a.id=e.approval_id WHERE e.adapter='outreach.send' AND e.status='succeeded'
+      AND a.decision='approve_with_edits'
+    eq: 1
+- kind: state
+  name: one send
+  spec:
+    sql: SELECT count(*) FROM ops.execution WHERE adapter='outreach.send' AND status='succeeded'
+    eq: 1
