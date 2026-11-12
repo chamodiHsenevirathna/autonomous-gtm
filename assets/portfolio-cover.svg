@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340">
+ <rect width="1200" height="340" fill="#111315"/>
+ <g fill="none" stroke="#303638" stroke-width="1"><path d="M0 280H1200M850 0V340"/><path d="M900 40h250M900 58h190M900 76h220"/></g>
+ <rect x="64" y="62" width="4" height="190" fill="#C7E39A"/>
+ <text x="92" y="88" fill="#AAB2AD" font-family="Arial,Helvetica,sans-serif" font-size="14" letter-spacing="3">A CONNECTED REVENUE WORKFLOW</text>
+ <text x="92" y="166" fill="#F2F4F0" font-family="Arial,Helvetica,sans-serif" font-size="58" font-weight="700" letter-spacing="1">AUTONOMOUS GTM</text>
+ <text x="94" y="211" fill="#C2C8C2" font-family="Arial,Helvetica,sans-serif" font-size="21">Research → qualify → review → act</text>
+ <text x="94" y="305" fill="#8D9690" font-family="Arial,Helvetica,sans-serif" font-size="12" letter-spacing="2">AN EXPERIMENT BY CHAMODI SENEVIRATHNA</text>
+ <g stroke="#C7E39A" fill="none" stroke-width="2" opacity=".85"><circle cx="1010" cy="180" r="58"/><circle cx="1010" cy="180" r="35"/><path d="M1010 105V255M935 180H1085M957 127l106 106M1063 127L957 233"/></g>
+ <circle cx="1010" cy="180" r="6" fill="#C7E39A"/>
+ </svg>
