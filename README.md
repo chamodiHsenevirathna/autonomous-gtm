@@ -1,5 +1,9 @@
 # Autonomous GTM
 
+<p align="center"><img src="assets/portfolio-cover.svg" alt="Autonomous GTM — a connected revenue workflow" width="100%" /></p>
+
+**The interesting part of go-to-market isn't any single task. It's what happens between them.**
+
 **What if a consultancy's whole path from "someone filled in our contact form" to "we are talking to the right person" worked as one connected process, with software doing the preparation and people keeping every decision that matters?**
 
 Autonomous GTM is a working case study of that idea, built for a fictional technology consultancy, Corvane Digital. It runs end to end on synthetic data and simulated systems.
